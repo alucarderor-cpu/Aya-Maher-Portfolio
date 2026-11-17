@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aya Maher | Vulnerability Analyst & Penetration Tester</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #06060f;
+            --bg-card: #0d0d1a;
+            --accent: #00e5a0;
+            --accent-dim: #00b87e;
+            --purple: #7b5ea7;
+            --purple-glow: rgba(123, 94, 167, 0.2);
+            --text-primary: #eeeef5;
+            --text-secondary: #7878a0;
+            --border: #1a1a2e;
+            --glow: rgba(0, 229, 160, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* === STARFIELD CANVAS === */
+        #starfield-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* === MATRIX RAIN === */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.04;
+        }
+
+        /* === GEOMANCY DECORATION SVGs === */
+        .geo-deco {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.04;
+            z-index: 0;
+        }
+
+        /* === NAV === */
+        nav {
+            position: fixed;
+            top: 0; right: 0; left: 0;
+            z-index: 100;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(6, 6, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+        }
+
+        .logo-dot {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* Mobile hamburger */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .nav-toggle span {
+            width: 24px; height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* === HERO === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+
+        .hero-bg-orb.orb1 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+            top: 5%; right: -5%;
+        }
+
+        .hero-bg-orb.orb2 {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
+            bottom: 10%; left: -5%;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1100px;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-text h1 span { color: var(--accent); }
+
+        .hero-text .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .hero-text p {
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            margin-bottom: 2rem;
+            max-width: 480px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dim);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .hero-photo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-frame {
+            width: clamp(200px, 35vw, 320px);
+            height: clamp(200px, 35vw, 320px);
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 60px var(--glow), inset 0 0 30px rgba(0,229,160,0.05);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Geomancy ring decoration around photo */
+        .photo-ring {
+            position: absolute;
+            width: calc(100% + 30px);
+            height: calc(100% + 30px);
+            top: -15px; left: -15px;
+            border: 1px dashed rgba(0, 229, 160, 0.2);
+            border-radius: 50%;
+            animation: spin 30s linear infinite;
+        }
+
+        .photo-ring::before,
+        .photo-ring::after {
+            content: '✦';
+            position: absolute;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .photo-ring::before { top: -6px; left: 50%; transform: translateX(-50%); }
+        .photo-ring::after { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 229, 160, 0.1);
+            border: 1px solid rgba(0, 229, 160, 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* === SECTIONS === */
+        section {
+            padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem);
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 40px; height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+        }
+
+        /* === ABOUT === */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .about-text {
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px var(--glow);
+        }
+
+        .stat-number {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 900;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        /* === EXPERIENCE === */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), var(--purple), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 0 0 3rem 2.5rem;
+        }
+
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px; top: 8px;
+            width: 12px; height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .timeline-date {
+            display: inline-block;
+            background: rgba(0, 229, 160, 0.1);
+            color: var(--accent);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .timeline-title {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-company {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+            line-height: 1.9;
+        }
+
+        /* === SKILLS === */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            transition: all 0.3s;
+        }
+
+        .skill-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px var(--glow);
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: rgba(0, 229, 160, 0.08);
+            border: 1px solid rgba(0, 229, 160, 0.2);
+            color: var(--accent);
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* === PROJECTS === */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--purple), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .project-card:hover::before { opacity: 1; }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px var(--glow);
+        }
+
+        .project-label {
+            color: var(--purple);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-card h3 {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            margin-bottom: 1rem;
+        }
+
+        .project-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .project-tech {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* === CERTIFICATIONS === */
+        .cert-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .cert-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px var(--glow);
+        }
+
+        .cert-badge {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .cert-info h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .cert-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* === LANGUAGES === */
+        .languages-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .lang-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            flex: 1;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .lang-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 30px var(--purple-glow);
+        }
+
+        .lang-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .lang-level {
+            color: var(--purple);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .lang-bar {
+            margin-top: 0.8rem;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .lang-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), var(--accent));
+            border-radius: 2px;
+        }
+
+        /* === ACTIVITIES === */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .activity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-card::after {
+            content: '✦';
+            position: absolute;
+            top: 1rem; right: 1rem;
+            color: var(--purple);
+            opacity: 0.3;
+            font-size: 1.5rem;
+        }
+
+        .activity-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 30px var(--purple-glow);
+            transform: translateY(-4px);
+        }
+
+        .activity-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .activity-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .activity-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        /* === CTF === */
+        .ctf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .ctf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .ctf-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px var(--glow);
+        }
+
+        .ctf-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .ctf-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .ctf-rank {
+            display: inline-block;
+            background: rgba(123, 94, 167, 0.15);
+            border: 1px solid rgba(123, 94, 167, 0.3);
+            color: var(--purple);
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.8rem;
+        }
+
+        /* === CONTACT === */
+        .contact-section {
+            text-align: center;
+            padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem);
+        }
+
+        .contact-section .section-title { justify-content: center; }
+
+        .contact-section .section-subtitle { margin-bottom: 3rem; }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.8rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .contact-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px var(--glow);
+        }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 2rem clamp(1rem, 4vw, 2rem);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === REVEAL (CSS only — JS toggles class) === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0; right: 0;
+                width: 260px; height: 100vh;
+                flex-direction: column;
+                background: rgba(6, 6, 15, 0.97);
+                backdrop-filter: blur(20px);
+                padding: 5rem 2rem 2rem;
+                gap: 1.5rem;
+                border-left: 1px solid var(--border);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+
+            .nav-links.open { transform: translateX(0); }
+
+            .nav-toggle { display: flex; z-index: 200; }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2.5rem;
+            }
+
+            .hero-text p { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .hero-photo { order: -1; }
+
+            .about-grid { grid-template-columns: 1fr; }
+            .about-stats { grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+            .stat-card { padding: 1rem 0.5rem; }
+
+            .projects-grid { grid-template-columns: 1fr; }
+            .activities-grid { grid-template-columns: 1fr; }
+            .ctf-grid { grid-template-columns: 1fr; }
+
+            .cert-card { flex-direction: column; text-align: center; }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .about-stats { grid-template-columns: repeat(3, 1fr); }
+            .skills-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .about-stats { grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
+            .stat-card { padding: 1rem 0.3rem; }
+            .stat-number { font-size: 1.4rem; }
+            .stat-label { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Starfield background -->
+    <canvas id="starfield-canvas"></canvas>
+    <!-- Matrix rain background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- NAV -->
+    <nav>
+        <a href="#" class="logo"><span class="logo-dot"></span>Aya Maher</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about" onclick="closeNav()">About</a></li>
+            <li><a href="#experience" onclick="closeNav()">Experience</a></li>
+            <li><a href="#skills" onclick="closeNav()">Skills</a></li>
+            <li><a href="#projects" onclick="closeNav()">Projects</a></li>
+            <li><a href="#certifications" onclick="closeNav()">Certifications</a></li>
+            <li><a href="#contact" onclick="closeNav()">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg-orb orb1"></div>
+        <div class="hero-bg-orb orb2"></div>
+        <div class="hero-grid">
+            <div class="hero-text">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    Open to Opportunities
+                </div>
+                <h1>Hi, I'm<br><span>Aya Maher Elsayed</span></h1>
+                <p class="tagline">Vulnerability Analyst &amp; Penetration Tester</p>
+                <p>Detail-oriented Cybersecurity professional specializing in Vulnerability Assessment and Penetration Testing (VAPT) with hands-on experience in web application, network/infrastructure, and Active Directory penetration testing.</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                    <a href="#projects" class="btn btn-outline">View Projects</a>
+                </div>
+            </div>
+            <div class="hero-photo">
+                <div style="position:relative;display:inline-block;">
+                    <div class="photo-ring"></div>
+                    <div class="photo-frame">
+                        <img src="images/Aya Maher.jpeg" alt="Aya Maher">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <h2 class="section-title reveal">About Me</h2>
+        <p class="section-subtitle reveal">My journey in cybersecurity</p>
+        <div class="about-grid">
+            <div class="about-text reveal">
+                <p>Cybersecurity professional specializing in vulnerability assessment and penetration testing (VAPT), with practical experience in web application hacking, network infrastructure, and Active Directory attacks.</p>
+                <br>
+                <p>Proficient with industry-standard tools including Burp Suite, Metasploit, Nmap, Nessus, Wireshark, and Nikto. Strong background in software testing, Agile methodologies, and test automation using Selenium.</p>
+                <br>
+                <p>Active practitioner on Hack The Box, TryHackMe, and PortSwigger platforms. Ranked in the Top 6% globally on TryHackMe.</p>
+            </div>
+            <div class="about-stats reveal">
+                <div class="stat-card">
+                    <span class="stat-number">15+</span>
+                    <span class="stat-label">Simulated Pentests</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">30+</span>
+                    <span class="stat-label">Vulnerabilities Found</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">80+</span>
+                    <span class="stat-label">Test Cases</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+        <h2 class="section-title reveal">Professional Experience</h2>
+        <p class="section-subtitle reveal">My path in cybersecurity</p>
+        <div class="timeline">
+            <div class="timeline-item reveal">
+                <span class="timeline-date">Feb 2026 – Jun 2026</span>
+                <h3 class="timeline-title">VAPT Analyst</h3>
+                <p class="timeline-company">Digilians</p>
+                <p class="timeline-desc">Completed specialized VAPT diploma program. Conducted 15+ simulated penetration tests for web applications and networks. Performed Active Directory assessments, identified 30+ security vulnerabilities, and produced professional reports.</p>
+            </div>
+            <div class="timeline-item reveal">
+                <span class="timeline-date">Nov 2024 – May 2025</span>
+                <h3 class="timeline-title">Software Testing Trainee</h3>
+                <p class="timeline-company">DEPI — Digital Egypt Pioneers Initiative</p>
+                <p class="timeline-desc">Authored 80+ comprehensive test cases achieving 95% requirement coverage for web applications. Automated 40% of repetitive regression tests using Selenium, reducing manual effort by 15 hours per week. Managed defect lifecycle using Jira in an Agile/Scrum environment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+        <h2 class="section-title reveal">Skills</h2>
+        <p class="section-subtitle reveal">Tools and techniques I master</p>
+        <div class="skills-grid">
+            <div class="skill-card reveal">
+                <div class="skill-icon">🔍</div>
+                <h3>Penetration Testing</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Web Applications</span>
+                    <span class="skill-tag">Infrastructure</span>
+                    <span class="skill-tag">Active Directory</span>
+                    <span class="skill-tag">Ethical Hacking</span>
+                </div>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">🛠️</div>
+                <h3>Tools</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Burp Suite</span>
+                    <span class="skill-tag">Metasploit</span>
+                    <span class="skill-tag">Nmap</span>
+                    <span class="skill-tag">Nessus</span>
+                    <span class="skill-tag">Wireshark</span>
+                    <span class="skill-tag">Nikto</span>
+                </div>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">📋</div>
+                <h3>Methodologies</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">OWASP Top 10</span>
+                    <span class="skill-tag">Manual &amp; Automated</span>
+                    <span class="skill-tag">Vulnerability Assessment</span>
+                    <span class="skill-tag">Reporting</span>
+                </div>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">💻</div>
+                <h3>Techniques &amp; Languages</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">SQL Injection</span>
+                    <span class="skill-tag">.NET Secure Coding</span>
+                    <span class="skill-tag">Selenium</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+        <h2 class="section-title reveal">Projects</h2>
+        <p class="section-subtitle reveal">Selected work and contributions</p>
+        <div class="projects-grid">
+            <div class="project-card reveal">
+                <span class="project-label">Security Tool</span>
+                <h3>hunJSter — JavaScript Security Reconnaissance Platform</h3>
+                <p>Engineered a specialized reconnaissance platform focused on static and dynamic analysis of JavaScript files to uncover hidden endpoints and sensitive data exposure. Automated security assessment workflows end-to-end.</p>
+                <div class="project-tech">
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">Recon</span>
+                </div>
+            </div>
+            <div class="project-card reveal">
+                <span class="project-label">Web Application</span>
+                <h3>Service Booking Platform</h3>
+                <p>Developed full-stack components and implemented structured security testing methodologies. Reviewed and hardened authentication workflows to mitigate common vulnerabilities, achieving 100% success rate in blocking unauthorized access attempts.</p>
+                <div class="project-tech">
+                    <span class="skill-tag">.NET</span>
+                    <span class="skill-tag">SQL Server</span>
+                    <span class="skill-tag">OWASP</span>
+                </div>
+            </div>
+            <div class="project-card reveal">
+                <span class="project-label">QA Leadership</span>
+                <h3>E-Learning Platform</h3>
+                <p>Led the full QA phase for a platform serving 500+ users prior to production launch. Identified and resolved 25 critical defects pre-launch, improving system stability and user satisfaction by 20%.</p>
+                <div class="project-tech">
+                    <span class="skill-tag">Selenium</span>
+                    <span class="skill-tag">Jira</span>
+                    <span class="skill-tag">Agile</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CERTIFICATIONS -->
+    <section id="certifications">
+        <h2 class="section-title reveal">Certifications</h2>
+        <p class="section-subtitle reveal">Qualifications and professional certifications</p>
+        <div class="cert-card reveal">
+            <div class="cert-badge">🏆</div>
+            <div class="cert-info">
+                <h3>eLearnsecurity Web Application Penetration Tester eXtreme (eWPTX)</h3>
+                <p>Earned certification demonstrating mastery of advanced web exploitation techniques, WAF evasion, and complex manual testing methodologies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education">
+        <h2 class="section-title reveal">Education</h2>
+        <p class="section-subtitle reveal">Academic background</p>
+        <div class="timeline">
+            <div class="timeline-item reveal">
+                <span class="timeline-date">2024 – 2025</span>
+                <h3 class="timeline-title">Software Engineering Diploma</h3>
+                <p class="timeline-company">Cairo University — Grade: Excellent (GPA ≈ 3.5/4)</p>
+                <p class="timeline-desc">Focus: Software Project Management, Web Architecture, Agile Development</p>
+            </div>
+            <div class="timeline-item reveal">
+                <span class="timeline-date">2019 – 2023</span>
+                <h3 class="timeline-title">Bachelor of Specific Education – Computer Department</h3>
+                <p class="timeline-company">Mansoura University — Grade: Excellent with Honors (GPA ≈ 3.6/4)</p>
+                <p class="timeline-desc">Coursework: Software Testing & QA, Software Engineering, AI, Data Structures & Algorithms, Network Programming, Database Management</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section id="languages">
+        <h2 class="section-title reveal">Languages</h2>
+        <p class="section-subtitle reveal">Languages I speak</p>
+        <div class="languages-row reveal">
+            <div class="lang-card">
+                <div class="lang-name">Arabic</div>
+                <div class="lang-level">Native</div>
+                <div class="lang-bar"><div class="lang-bar-fill" style="width:100%"></div></div>
+            </div>
+            <div class="lang-card">
+                <div class="lang-name">English</div>
+                <div class="lang-level">Intermediate — Professional Working Proficiency</div>
+                <div class="lang-bar"><div class="lang-bar-fill" style="width:60%"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACTIVITIES -->
+    <section id="activities">
+        <h2 class="section-title reveal">Activities</h2>
+        <p class="section-subtitle reveal">Beyond cybersecurity</p>
+        <div class="activities-grid">
+            <div class="activity-card reveal">
+                <div class="activity-icon">🪐</div>
+                <h3>NASA Asteroid Search Campaign</h3>
+                <p>Participated as a Scientific Researcher, collaborating internationally to analyze astronomical data and detect near-Earth objects.</p>
+            </div>
+            <div class="activity-card reveal">
+                <div class="activity-icon">👥</div>
+                <h3>Class Leader</h3>
+                <p>Managed faculty–student communication for 200+ students across 4 years at university.</p>
+            </div>
+            <div class="activity-card reveal">
+                <div class="activity-icon">🤝</div>
+                <h3>Students for Egypt</h3>
+                <p>Volunteer member contributing to national development initiatives and community engagement.</p>
+            </div>
+            <div class="activity-card reveal">
+                <div class="activity-icon">🎓</div>
+                <h3>Student Union</h3>
+                <p>Organized workshops and committees, increasing student participation by 40%.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTF & LABS -->
+    <section id="ctf">
+        <h2 class="section-title reveal">CTF &amp; Practical Labs</h2>
+        <p class="section-subtitle reveal">Hands-on practice platforms</p>
+        <div class="ctf-grid">
+            <div class="ctf-card reveal">
+                <h3>PortSwigger Academy</h3>
+                <p>Mastered advanced web application vulnerabilities and intricate Burp Suite exploitation workflows.</p>
+            </div>
+            <div class="ctf-card reveal">
+                <h3>Hack The Box</h3>
+                <p>Practiced real-world penetration testing scenarios in isolated lab environments.</p>
+            </div>
+            <div class="ctf-card reveal">
+                <h3>TryHackMe</h3>
+                <p>Completed rooms covering web exploitation, privilege escalation, network enumeration, and Active Directory attacks.</p>
+                <span class="ctf-rank">Top 6% Global</span>
+            </div>
+            <div class="ctf-card reveal">
+                <h3>OverTheWire (Bandit)</h3>
+                <p>Solidified foundational Linux command-line proficiency and system enumeration techniques essential for penetration testing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact-section">
+        <h2 class="section-title reveal">Get In Touch</h2>
+        <p class="section-subtitle reveal">Have an opportunity or project? Let's talk!</p>
+        <div class="contact-links reveal">
+            <a href="mailto:ayaelnagar101@gmail.com" class="contact-link">
+                📧 Email
+            </a>
+            <a href="https://www.linkedin.com/in/aya-maher-alsayed" target="_blank" rel="noopener noreferrer" class="contact-link">
+                💼 LinkedIn
+            </a>
+            <a href="tel:+201013184344" class="contact-link">
+                📞 Phone
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 Aya Maher Elsayed — All rights reserved</p>
+    </footer>
+
+    <!-- GSAP -->
+    <script src="gsap/gsap.min.js"></script>
+    <script src="gsap/ScrollTrigger.min.js"></script>
+    <script src="gsap/EasePack.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ===== Reveal on scroll — CSS class toggle only =====
+        // Hero elements skip this; they animate once on load below.
+        const nonHeroReveals = document.querySelectorAll('.reveal:not(.hero-element)');
+        nonHeroReveals.forEach(el => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            observer.observe(el);
+        });
+
+        // ===== Hero stagger — plays ONCE on page load, never reverses =====
+        const heroRevealEls = document.querySelectorAll('.hero .reveal');
+        heroRevealEls.forEach(el => el.classList.add('hero-element'));
+
+        gsap.from('.hero .reveal', {
+            opacity: 0,
+            y: 50,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: 'back.out(1.2)',
+            delay: 0.2,
+            onComplete: () => {
+                gsap.set('.hero .reveal', { opacity: 1, y: 0 });
+            }
+        });
+
+        // Photo frame glow pulse
+        gsap.to('.photo-frame', {
+            boxShadow: '0 0 80px rgba(0,229,160,0.3), inset 0 0 30px rgba(0,229,160,0.05)',
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+
+        // Stat counter animation
+        gsap.utils.toArray('.stat-number').forEach(el => {
+            const raw = el.textContent.replace(/[^0-9]/g, '');
+            const suffix = el.textContent.replace(/[0-9]/g, '');
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+                onEnter: () => {
+                    gsap.fromTo(el,
+                        { textContent: 0 },
+                        {
+                            textContent: parseInt(raw),
+                            duration: 1.5,
+                            ease: 'power2.out',
+                            snap: { textContent: 1 },
+                            onUpdate: function() {
+                                el.textContent = Math.round(parseFloat(el.textContent)) + suffix;
+                            }
+                        }
+                    );
+                }
+            });
+        });
+
+        // Skill cards stagger
+        gsap.from('.skill-card', {
+            opacity: 0, y: 30,
+            duration: 0.5, stagger: 0.08,
+            ease: 'back.out(1.2)',
+            scrollTrigger: { trigger: '.skills-grid', start: 'top 80%', once: true }
+        });
+
+        // Project cards stagger
+        gsap.from('.project-card', {
+            opacity: 0, y: 40, scale: 0.95,
+            duration: 0.6, stagger: 0.1,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: '.projects-grid', start: 'top 80%', once: true }
+        });
+
+        // Timeline items slide in — NO reverse
+        document.querySelectorAll('.timeline-item.reveal').forEach(item => {
+            ScrollTrigger.create({
+                trigger: item,
+                start: 'top 85%',
+                once: true,
+                onEnter: () => item.classList.add('is-visible')
+            });
+        });
+
+        // Activity & CTF cards
+        document.querySelectorAll('.activity-card.reveal, .ctf-card.reveal, .lang-card.reveal').forEach(el => {
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 88%',
+                once: true,
+                onEnter: () => el.classList.add('is-visible')
+            });
+        });
+
+        // ===== Starfield Canvas =====
+        (function initStarfield() {
+            const canvas = document.getElementById('starfield-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                createStars();
+            }
+
+            function createStars() {
+                const count = Math.floor((canvas.width * canvas.height) / 4000);
+                stars = [];
+                for (let i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        r: Math.random() * 1.5 + 0.3,
+                        alpha: Math.random() * 0.8 + 0.2,
+                        pulse: Math.random() * Math.PI * 2,
+                        speed: Math.random() * 0.005 + 0.002
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                stars.forEach(s => {
+                    s.pulse += s.speed;
+                    const a = s.alpha * (0.6 + 0.4 * Math.sin(s.pulse));
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(200, 210, 255, ${a})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        // ===== Matrix Rain Canvas =====
+        (function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const chars = 'アイウエオカキクケコサシスセソ0123456789ABCDEF<>/{}[]';
+            const fontSize = 14;
+            let columns = Math.floor(canvas.width / fontSize);
+            let drops = Array(columns).fill(1);
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(6, 6, 15, 0.06)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00e5a0';
+                ctx.font = fontSize + 'px monospace';
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            const matrixInterval = setInterval(drawMatrix, 50);
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                columns = Math.floor(canvas.width / fontSize);
+                drops = Array(columns).fill(1);
+            });
+        })();
+
+        // ===== Mobile nav toggle =====
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+
+        function closeNav() {
+            navLinks.classList.remove('open');
+        }
+
+        // Close nav when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                closeNav();
+            }
+        });
+
+        // ===== Smooth scroll for anchor links =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

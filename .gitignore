@@ -25,3 +25,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Source documents (not needed for deployment)
+*.docx
+*.pdf
+cv_full_text.txt
+extract_resume.py

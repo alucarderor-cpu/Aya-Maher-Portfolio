@@ -251,8 +251,8 @@
         }
 
         .photo-frame {
-            width: clamp(200px, 35vw, 320px);
-            height: clamp(200px, 35vw, 320px);
+            width: clamp(220px, 40vw, 380px);
+            height: clamp(220px, 40vw, 380px);
             border-radius: 50%;
             border: 3px solid var(--accent);
             overflow: hidden;
@@ -704,6 +704,50 @@
             line-height: 1.8;
         }
 
+        /* === CORE COMPETENCIES === */
+        .competencies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .competency-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .competency-card::after {
+            content: '✦';
+            position: absolute;
+            top: 1rem; right: 1rem;
+            color: var(--accent);
+            opacity: 0.25;
+            font-size: 1.3rem;
+        }
+
+        .competency-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 25px var(--green-glow);
+            transform: translateY(-4px);
+        }
+
+        .competency-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.7rem;
+            color: var(--accent);
+        }
+
+        .competency-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
         /* === CTF === */
         .ctf-grid {
             display: grid;
@@ -854,6 +898,7 @@
         @media (min-width: 769px) and (max-width: 1024px) {
             .about-stats { grid-template-columns: repeat(3, 1fr); }
             .skills-grid { grid-template-columns: repeat(2, 1fr); }
+            .competencies-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 480px) {
@@ -872,12 +917,13 @@
 
     <!-- NAV -->
     <nav>
-        <a href="#" class="logo"><span class="logo-dot"></span>Aya Maher</a>
+        <a href="#" class="logo"><span class="logo-dot"></span>Aya Maher Elsayed</a>
         <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
             <span></span><span></span><span></span>
         </button>
         <ul class="nav-links" id="navLinks">
             <li><a href="#about" onclick="closeNav()">About</a></li>
+            <li><a href="#competencies" onclick="closeNav()">Competencies</a></li>
             <li><a href="#experience" onclick="closeNav()">Experience</a></li>
             <li><a href="#skills" onclick="closeNav()">Skills</a></li>
             <li><a href="#projects" onclick="closeNav()">Projects</a></li>
@@ -908,7 +954,7 @@
                 <div style="position:relative;display:inline-block;">
                     <div class="photo-ring"></div>
                     <div class="photo-frame">
-                        <img src="images/Aya Maher.jpeg" alt="Aya Maher">
+                        <img src="images/hero-photo.jpg" alt="Aya Maher">
                     </div>
                 </div>
             </div>
@@ -921,11 +967,7 @@
         <p class="section-subtitle reveal">My journey in cybersecurity</p>
         <div class="about-grid">
             <div class="about-text reveal">
-                <p>Cybersecurity professional specializing in vulnerability assessment and penetration testing (VAPT), with practical experience in web application hacking, network infrastructure, and Active Directory attacks.</p>
-                <br>
-                <p>Proficient with industry-standard tools including Burp Suite, Metasploit, Nmap, Nessus, Wireshark, and Nikto. Strong background in software testing, Agile methodologies, and test automation using Selenium.</p>
-                <br>
-                <p>Active practitioner on Hack The Box, TryHackMe, and PortSwigger platforms. Ranked in the Top 6% globally on TryHackMe.</p>
+                <p>Detail-oriented Cybersecurity professional specializing in Vulnerability Assessment and Penetration Testing (VAPT) with hands-on experience in web application, network/infrastructure, and Active Directory penetration testing. Proficient in industry-standard tools including Burp Suite, Metasploit, Nmap, Nessus, Wireshark, and Nikto. Experienced in identifying, exploiting, and documenting security vulnerabilities aligned with OWASP Top 10. Strong background in software testing, Agile methodologies, and test automation with Selenium. Active practitioner on Hack The Box, TryHackMe, and PortSwigger platforms.</p>
             </div>
             <div class="about-stats reveal">
                 <div class="stat-card">
@@ -944,6 +986,30 @@
         </div>
     </section>
 
+    <!-- CORE COMPETENCIES -->
+    <section id="competencies">
+        <h2 class="section-title reveal">Core Competencies</h2>
+        <p class="section-subtitle reveal">Areas of expertise</p>
+        <div class="competencies-grid">
+            <div class="competency-card reveal">
+                <h3>Penetration Testing</h3>
+                <p>Web Applications, Network Infrastructure, Active Directory, Ethical Hacking</p>
+            </div>
+            <div class="competency-card reveal">
+                <h3>Tools</h3>
+                <p>Burp Suite, Metasploit, Nmap, Nessus, Wireshark, Nikto</p>
+            </div>
+            <div class="competency-card reveal">
+                <h3>Methodologies</h3>
+                <p>OWASP Top 10, Manual &amp; Automated Testing, Vulnerability Assessment &amp; Reporting</p>
+            </div>
+            <div class="competency-card reveal">
+                <h3>Technologies &amp; Languages</h3>
+                <p>Python, JavaScript, SQL/SQL Injection, .NET Secure Coding</p>
+            </div>
+        </div>
+    </section>
+
     <!-- EXPERIENCE -->
     <section id="experience">
         <h2 class="section-title reveal">Professional Experience</h2>
@@ -953,7 +1019,7 @@
                 <span class="timeline-date">Feb 2026 – Jun 2026</span>
                 <h3 class="timeline-title">VAPT Analyst</h3>
                 <p class="timeline-company">Digilians</p>
-                <p class="timeline-desc">Completed specialized VAPT diploma program. Conducted 15+ simulated penetration tests for web applications and networks. Performed Active Directory assessments, identified 30+ security vulnerabilities, and produced professional reports.</p>
+                <p class="timeline-desc">Successfully completed a specialized Vulnerability Assessment and Penetration Testing (VAPT) diploma and defended the final graduation project.<br>Executed comprehensive methodology-based assessments in the final project, simulating real-world threat actor behaviors to identify and exploit critical vulnerabilities.<br>Performed 15+ simulated penetration tests covering web application security, network security, and ethical hacking using tools such as Burp Suite, Nmap, Metasploit, Nessus, and Wireshark.<br>Conducted Active Directory and Windows environment assessments, identifying privilege escalation and lateral movement vulnerabilities.<br>Identified, exploited, and documented 30+ security vulnerabilities in controlled lab environments, producing professional-grade vulnerability reports.</p>
             </div>
             <div class="timeline-item reveal">
                 <span class="timeline-date">Nov 2024 – May 2025</span>
@@ -1023,7 +1089,7 @@
             <div class="project-card reveal">
                 <span class="project-label">Security Tool</span>
                 <h3>hunJSter — JavaScript Security Reconnaissance Platform</h3>
-                <p>Engineered a specialized reconnaissance platform focused on static and dynamic analysis of JavaScript files to uncover hidden endpoints and sensitive data exposure. Automated security assessment workflows end-to-end.</p>
+                <p>Engineered a specialized reconnaissance platform focused on static and dynamic analysis of JavaScript files to uncover hidden endpoints and sensitive data exposure. Automated security assessment workflows, significantly enhancing the efficiency of web application penetration testing and attack surface mapping.</p>
                 <div class="project-tech">
                     <span class="skill-tag">Python</span>
                     <span class="skill-tag">JavaScript</span>
@@ -1033,7 +1099,7 @@
             <div class="project-card reveal">
                 <span class="project-label">Web Application</span>
                 <h3>Service Booking Platform</h3>
-                <p>Developed full-stack components and implemented structured security testing methodologies. Reviewed and hardened authentication workflows to mitigate common vulnerabilities, achieving 100% success rate in blocking unauthorized access attempts.</p>
+                <p>Developed full-stack components and implemented structured security testing methodologies. Reviewed and hardened authentication workflows to mitigate common vulnerabilities, achieving 100% success rate in blocking unauthorized access attempts. Applied OWASP Top 10 principles including protection against SQL Injection, broken authentication, and insecure direct object references.</p>
                 <div class="project-tech">
                     <span class="skill-tag">.NET</span>
                     <span class="skill-tag">SQL Server</span>
@@ -1165,7 +1231,7 @@
             <a href="mailto:ayaelnagar101@gmail.com" class="contact-link">
                 📧 Email
             </a>
-            <a href="https://www.linkedin.com/in/aya-maher-alsayed" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <a href="https://www.linkedin.com/in/aya-m-elnagar/" target="_blank" rel="noopener noreferrer" class="contact-link">
                 💼 LinkedIn
             </a>
             <a href="tel:+201013184344" class="contact-link">

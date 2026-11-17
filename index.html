@@ -1253,8 +1253,10 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // ===== Reveal on scroll — CSS class toggle only =====
-        // Hero elements skip this; they animate once on load below.
+        // Skill & Project cards gain .reveal dynamically; observe after
+        document.querySelectorAll('.skill-card, .project-card').forEach(function(el) {
+            el.classList.add('reveal');
+        });
         const nonHeroReveals = document.querySelectorAll('.reveal:not(.hero-element)');
         nonHeroReveals.forEach(el => {
             const observer = new IntersectionObserver((entries) => {
@@ -1271,26 +1273,16 @@
         // ===== Hero stagger — plays ONCE on page load, never reverses =====
         const heroRevealEls = document.querySelectorAll('.hero .reveal');
         heroRevealEls.forEach(el => el.classList.add('hero-element'));
-
         gsap.from('.hero .reveal', {
-            opacity: 0,
-            y: 50,
-            duration: 0.8,
-            stagger: 0.12,
-            ease: 'back.out(1.2)',
-            delay: 0.2,
-            onComplete: () => {
-                gsap.set('.hero .reveal', { opacity: 1, y: 0 });
-            }
+            opacity: 0, y: 50, duration: 0.8, stagger: 0.12,
+            ease: 'back.out(1.2)', delay: 0.2,
+            onComplete: () => { gsap.set('.hero .reveal', { opacity: 1, y: 0 }); }
         });
 
         // Photo frame glow pulse
         gsap.to('.photo-frame', {
             boxShadow: '0 0 80px rgba(0,229,160,0.3), inset 0 0 30px rgba(0,229,160,0.05)',
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
+            duration: 2, repeat: -1, yoyo: true, ease: 'sine.inOut'
         });
 
         // Stat counter animation
@@ -1298,40 +1290,15 @@
             const raw = el.textContent.replace(/[^0-9]/g, '');
             const suffix = el.textContent.replace(/[0-9]/g, '');
             ScrollTrigger.create({
-                trigger: el,
-                start: 'top 85%',
-                once: true,
+                trigger: el, start: 'top 85%', once: true,
                 onEnter: () => {
-                    gsap.fromTo(el,
-                        { textContent: 0 },
-                        {
-                            textContent: parseInt(raw),
-                            duration: 1.5,
-                            ease: 'power2.out',
-                            snap: { textContent: 1 },
-                            onUpdate: function() {
-                                el.textContent = Math.round(parseFloat(el.textContent)) + suffix;
-                            }
-                        }
-                    );
+                    gsap.fromTo(el, { textContent: 0 }, {
+                        textContent: parseInt(raw), duration: 1.5, ease: 'power2.out',
+                        snap: { textContent: 1 },
+                        onUpdate: function() { el.textContent = Math.round(parseFloat(el.textContent)) + suffix; }
+                    });
                 }
             });
-        });
-
-        // Skill cards stagger
-        gsap.from('.skill-card', {
-            opacity: 0, y: 30,
-            duration: 0.5, stagger: 0.08,
-            ease: 'back.out(1.2)',
-            scrollTrigger: { trigger: '.skills-grid', start: 'top 80%', once: true }
-        });
-
-        // Project cards stagger
-        gsap.from('.project-card', {
-            opacity: 0, y: 40, scale: 0.95,
-            duration: 0.6, stagger: 0.1,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: '.projects-grid', start: 'top 80%', once: true }
         });
 
         // Timeline items slide in — NO reverse
